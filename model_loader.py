@@ -3,4 +3,4 @@ from ultralytics import FastSAM
 
 @st.cache_resource
 def load_model():
-    return FastSAM("FastSAM-s.pt")
+    return FastSAM("models/FastSAM-s.pt")
