@@ -1,13 +1,20 @@
 import streamlit as st
+from streamlit_drawable_canvas import st_canvas
 from .base import SegmentationMode
 
 class BoundingBoxPromptMode(SegmentationMode):
     def get_sidebar_inputs(self):
-        x1 = st.sidebar.number_input("X1", min_value=0, value=50)
-        y1 = st.sidebar.number_input("Y1", min_value=0, value=50)
-        x2 = st.sidebar.number_input("X2", min_value=0, value=200)
-        y2 = st.sidebar.number_input("Y2", min_value=0, value=200)
-        return {"bboxes": [[x1, y1, x2, y2]]}
+        st.sidebar.write("Draw bounding boxes on the image canvas (drag to create boxes).")
+
+        # Will get boxes from main.py via canvas interaction, so return empty here
+
+        return {}
 
     def run_segmentation(self, image_path, params):
-        return self.model(image_path, bboxes=params["bboxes"], retina_masks=True)
+        bboxes = params.get("bboxes", [])
+
+        if not bboxes:
+            st.warning("No bounding boxes provided for segmentation.")
+            return None
+
+        return self.model(image_path, bboxes=bboxes, retina_masks=False)

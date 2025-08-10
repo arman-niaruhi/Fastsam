@@ -7,4 +7,4 @@ class TextPromptMode(SegmentationMode):
         return {"texts": prompt}
 
     def run_segmentation(self, image_path, params):
-        return self.model(image_path, texts=params["texts"], retina_masks=True)
+        return self.model(image_path, texts=params["texts"], retina_masks=False)

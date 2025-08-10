@@ -1,12 +1,22 @@
 import streamlit as st
+from streamlit_drawable_canvas import st_canvas
 from .base import SegmentationMode
 
 class PointPromptMode(SegmentationMode):
     def get_sidebar_inputs(self):
-        x = st.sidebar.number_input("Point X coordinate", min_value=0, value=200)
-        y = st.sidebar.number_input("Point Y coordinate", min_value=0, value=200)
-        label = st.sidebar.number_input("Label (1=Foreground)", min_value=0, max_value=1, value=1)
-        return {"points": [[x, y]], "labels": [label]}
+        st.sidebar.write("Draw points on the image canvas (click to add points).")
+
+        # We'll get points from main.py by passing the image and canvas data later
+        # So just return empty here; main will call a function to handle drawing
+
+        return {}
 
     def run_segmentation(self, image_path, params):
-        return self.model(image_path, points=params["points"], labels=params["labels"], retina_masks=True)
+        points = params.get("points", [])
+        labels = params.get("labels", [])
+
+        if not points:
+            st.warning("No points provided for segmentation.")
+            return None
+
+        return self.model(image_path, points=points, labels=labels, retina_masks=False)
