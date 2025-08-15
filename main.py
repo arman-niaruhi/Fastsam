@@ -8,18 +8,23 @@ from model_loader import load_model
 from mode_factory import ModeFactory
 
 def extract_points_and_labels(drawn_objects):
-    # drawn_objects is a list of dicts from canvas.json_data['objects']
     points = []
     labels = []
-
+    
+    if not drawn_objects:
+        st.warning("No objects detected on canvas!")
+        return points, labels
+    
     for obj in drawn_objects:
-        if obj["type"] == "circle":
-            # Assuming circles represent points
-            # Extract center x,y
-            x = obj["left"] + obj["radius"]
-            y = obj["top"] + obj["radius"]
-            points.append([int(x), int(y)])
-            labels.append(1)  # label 1 = foreground for points
+        if obj["type"] == "path":  # Freedraw creates paths, not circles
+            # Take the first point of the path as our point
+            if "path" in obj and len(obj["path"]) > 0:
+                x = obj["path"][0][1]  # Path format: [["M", x, y], ...]
+                y = obj["path"][0][2]
+                points.append([int(x), int(y)])
+                labels.append(1)
+                print(f"Added point: {[int(x), int(y)]}")
+    
     return points, labels
 
 def extract_bboxes(drawn_objects):
